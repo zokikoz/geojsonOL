@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @geoset.name %>
+</p>
+
+<p>
+  <strong>Geojson:</strong>
+  <%= @geoset.geojson %>
+</p>
+
+<%= link_to 'Edit', edit_geoset_path(@geoset) %> |
+<%= link_to 'Back', geosets_path %>

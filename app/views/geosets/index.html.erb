@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Geosets</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Geojson</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @geosets.each do |geoset| %>
+      <tr>
+        <td><%= geoset.name %></td>
+        <td><%= geoset.geojson %></td>
+        <td><%= link_to 'Show', geoset %></td>
+        <td><%= link_to 'Edit', edit_geoset_path(geoset) %></td>
+        <td><%= link_to 'Destroy', geoset, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Geoset', new_geoset_path %>

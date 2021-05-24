@@ -1,0 +1,2 @@
+class Geoset < ApplicationRecord
+end

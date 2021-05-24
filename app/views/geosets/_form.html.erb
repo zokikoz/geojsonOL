@@ -1,0 +1,27 @@
+<%= form_with(model: geoset) do |form| %>
+  <% if geoset.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(geoset.errors.count, "error") %> prohibited this geoset from being saved:</h2>
+
+      <ul>
+        <% geoset.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :geojson %>
+    <%= form.text_field :geojson %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
