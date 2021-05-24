@@ -64,6 +64,6 @@ class GeosetsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def geoset_params
-      params.require(:geoset).permit(:name, :geojson)
+      params.require(:geoset).permit(:name, :geojson, :geojson_file)
     end
 end
