@@ -1,3 +1,7 @@
+AllCops:
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
 Layout/EndOfLine:
   EnforcedStyle: lf
 Style/FrozenStringLiteralComment:
