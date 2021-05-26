@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "geosets/new", type: :view do
   before(:each) do
-    assign(:geoset, Geoset.new())
+    assign(:geoset, FactoryBot.build(:geoset))
   end
 
   it "renders new geoset form" do
