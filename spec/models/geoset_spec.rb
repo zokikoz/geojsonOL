@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe Geoset, type: :model do
+  describe "Presence" do
+    it { should validate_presence_of(:geojson) }
+  end
+
   describe "File upload" do
     subject { FactoryBot.create(:geoset) }
     it "attach valid file" do
