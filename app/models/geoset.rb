@@ -3,18 +3,11 @@ class Geoset < ApplicationRecord
   after_commit :json_upload, on: [:create, :update], if: -> { geojson_file.attached? }
 
   validates :geojson, presence: true, unless: -> { geojson_file.attached? }
-  validate :file_format
+  validates :geojson_file, file_type: ['application/geo+json']
 
   has_one_attached :geojson_file
 
   private
-
-  def file_format
-    return unless geojson_file.attached?
-    return if geojson_file.content_type.in?(['application/geo+json'])
-
-    errors.add(:geojson_file, 'Invalid file format')
-  end
 
   def json_upload
     json = JSON.parse(geojson_file.download)

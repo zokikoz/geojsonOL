@@ -15,5 +15,10 @@ RSpec.describe Geoset, type: :model do
       )
       expect(subject.geojson_file).to be_attached
     end
+    it "does not attach invalid file" do
+      subject.geojson_file.attach({ io: StringIO.new('Test'), filename: 'test.gif', content_type: 'image/gif' })
+      subject.validate
+      expect(subject.errors[:geojson_file]).to include('invalid format')
+    end
   end
 end
