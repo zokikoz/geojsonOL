@@ -1,5 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Geoset, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe "File upload" do
+    subject { FactoryBot.create(:geoset) }
+    it "attach valid file" do
+      subject.geojson_file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'map.geojson')),
+        filename: 'map.geojson',
+        content_type: 'application/geo+json'
+      )
+      expect(subject.geojson_file).to be_attached
+    end
+  end
 end
