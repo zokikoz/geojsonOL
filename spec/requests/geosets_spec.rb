@@ -15,11 +15,9 @@ require 'rails_helper'
 RSpec.describe "/geosets", type: :request do
   # Geoset. As you add validations to Geoset, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) { { name: 'GeoJSON polygon' } }
+  let(:valid_attributes) { { geojson: '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[103.0078125,50.84757295365389],[111.26953125,50.84757295365389],[111.26953125,56.072035471800866],[103.0078125,56.072035471800866],[103.0078125,50.84757295365389]]]}}]}' } }
 
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
+  let(:invalid_attributes) { { geojson: nil } }
 
   describe "GET /index" do
     it "renders a successful response" do
@@ -73,22 +71,21 @@ RSpec.describe "/geosets", type: :request do
         }.to change(Geoset, :count).by(0)
       end
 
-      it "renders a successful response (i.e. to display the 'new' template)" do
+      it "renders a response with 422 status - unporcessable entity" do
         post geosets_url, params: { geoset: invalid_attributes }
-        expect(response).to be_successful
+        expect(response.status).to eq(422)
       end
     end
   end
 
   describe "PATCH /update" do
     context "with valid parameters" do
-      let(:new_attributes) { { name: 'GeoJSON line' } }
+      let(:new_attributes) { { geojson: '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[102.10693359375,56.559482483762245],[101.865234375,51.20688339486559],[110.32470703125,51.20688339486559],[110.36865234374999,56.559482483762245],[102.10693359375,56.559482483762245]]]}}]}' } }
 
       it "updates the requested geoset" do
         geoset = Geoset.create! valid_attributes
         patch geoset_url(geoset), params: { geoset: new_attributes }
         geoset.reload
-        skip("Add assertions for updated state")
       end
 
       it "redirects to the geoset" do
@@ -100,10 +97,10 @@ RSpec.describe "/geosets", type: :request do
     end
 
     context "with invalid parameters" do
-      it "renders a successful response (i.e. to display the 'edit' template)" do
+      it "renders a response with 422 status - unporcessable entity" do
         geoset = Geoset.create! valid_attributes
         patch geoset_url(geoset), params: { geoset: invalid_attributes }
-        expect(response).to be_successful
+        expect(response.status).to eq(422)
       end
     end
   end
