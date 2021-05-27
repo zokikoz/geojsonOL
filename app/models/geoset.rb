@@ -1,6 +1,7 @@
 class Geoset < ApplicationRecord
   # Should be before has_one_attached to find file, because _after callbacks run in reverse order
   after_commit :json_upload, on: [:create, :update], if: -> { geojson_file.attached? }
+  before_save :json_parse, unless: -> { geojson_file.attached? }
 
   with_options unless: -> { geojson_file.attached? } do |geoset|
     geoset.validates :geojson, presence: true
@@ -11,6 +12,10 @@ class Geoset < ApplicationRecord
   validates :geojson_file, file_type: ['application/geo+json']
 
   private
+
+  def json_parse
+    self.geojson = JSON.parse(geojson)
+  end
 
   def json_upload
     json = JSON.parse(geojson_file.download)
