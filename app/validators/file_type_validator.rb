@@ -4,7 +4,7 @@ class FileTypeValidator < ActiveModel::EachValidator
     return unless value.attached?
     return if value.content_type.in?(content_types)
 
-    record.errors.add(attribute, 'invalid format')
+    record.errors.add(attribute, 'invalid content')
   end
 
   private

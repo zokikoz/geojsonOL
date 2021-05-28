@@ -12,18 +12,18 @@ RSpec.describe Geoset, type: :model do
 
   describe "File upload" do
     subject { FactoryBot.create(:geoset) }
-    it "attach valid file" do
+    it "purge file after save" do
       subject.geojson_file.attach(
         io: File.open(Rails.root.join('spec', 'fixtures', 'map.geojson')),
         filename: 'map.geojson',
         content_type: 'application/geo+json'
       )
-      expect(subject.geojson_file).to be_attached
+      expect(subject.geojson_file).not_to be_attached
     end
-    it "does not attach invalid file" do
+    it "does not process invalid file" do
       subject.geojson_file.attach({ io: StringIO.new('Test'), filename: 'test.gif', content_type: 'image/gif' })
       subject.validate
-      expect(subject.errors[:geojson_file]).to include('invalid format')
+      expect(subject.errors[:geojson_file]).to include('invalid content')
     end
   end
 end
