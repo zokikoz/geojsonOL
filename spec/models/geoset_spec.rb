@@ -5,6 +5,11 @@ RSpec.describe Geoset, type: :model do
     it { should validate_presence_of(:geojson) }
   end
 
+  describe "GeoJSON format validator" do
+    it { should allow_value('{"type":"FeatureCollection","features":[]}').for(:geojson) }
+    it { should_not allow_value('http://www.example.com').for(:geojson) }
+  end
+
   describe "File upload" do
     subject { FactoryBot.create(:geoset) }
     it "attach valid file" do
