@@ -1,4 +1,5 @@
 require 'rails_helper'
+fixture = Rails.root.join('spec', 'fixtures', 'map.geojson')
 
 RSpec.describe Geoset, type: :model do
   describe "Presence" do
@@ -7,19 +8,24 @@ RSpec.describe Geoset, type: :model do
 
   describe "GeoJSON format validator" do
     it { should allow_value('{"type":"FeatureCollection","features":[]}').for(:geojson) }
-    it { should_not allow_value('http://www.example.com').for(:geojson) }
+    it { should_not allow_value('Not GeoJSON').for(:geojson) }
   end
 
   describe "File upload" do
     subject { FactoryBot.create(:geoset) }
-    it "purge file after save" do
-      subject.geojson_file.attach(
-        io: File.open(Rails.root.join('spec', 'fixtures', 'map.geojson')),
-        filename: 'map.geojson',
-        content_type: 'application/geo+json'
-      )
-      expect(subject.geojson_file).not_to be_attached
+    context "with valid file" do
+      json = JSON.parse(File.read(fixture))
+      before do
+        subject.geojson_file.attach(io: File.open(fixture), filename: 'map.geojson', content_type: 'application/geo+json')
+      end
+      it "purge file after save" do
+        expect(subject.geojson_file).not_to be_attached
+      end
+      it "load file to database" do
+        expect(subject.geojson).to eq(json)
+      end
     end
+
     it "does not process invalid file" do
       subject.geojson_file.attach({ io: StringIO.new('Test'), filename: 'test.gif', content_type: 'image/gif' })
       subject.validate
