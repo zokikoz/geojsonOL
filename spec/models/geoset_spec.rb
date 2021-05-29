@@ -1,5 +1,4 @@
 require 'rails_helper'
-fixture = Rails.root.join('spec', 'fixtures', 'map.geojson')
 
 RSpec.describe Geoset, type: :model do
   describe "Presence" do
@@ -13,8 +12,10 @@ RSpec.describe Geoset, type: :model do
 
   describe "File upload" do
     subject { FactoryBot.create(:geoset) }
+
     context "with valid file" do
-      json = JSON.parse(File.read(fixture))
+      fixture = Rails.root.join('spec', 'fixtures', 'map.geojson')
+      fixture_json = JSON.parse(File.read(fixture))
       before do
         subject.geojson_file.attach(io: File.open(fixture), filename: 'map.geojson', content_type: 'application/geo+json')
       end
@@ -22,14 +23,18 @@ RSpec.describe Geoset, type: :model do
         expect(subject.geojson_file).not_to be_attached
       end
       it "load file to database" do
-        expect(subject.geojson).to eq(json)
+        expect(subject.geojson).to eq(fixture_json)
       end
     end
 
-    it "does not process invalid file" do
-      subject.geojson_file.attach({ io: StringIO.new('Test'), filename: 'test.gif', content_type: 'image/gif' })
-      subject.validate
-      expect(subject.errors[:geojson_file]).to include('invalid content')
+    context "with invalid file" do
+      before do
+        subject.geojson_file.attach(io: StringIO.new('Test'), filename: 'test.gif', content_type: 'image/gif')
+        subject.validate
+      end
+      it "does not process invalid file" do
+        expect(subject.errors[:geojson_file]).to include('invalid content')
+      end
     end
   end
 end
