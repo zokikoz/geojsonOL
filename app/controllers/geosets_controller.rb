@@ -1,5 +1,6 @@
 class GeosetsController < ApplicationController
-  before_action :set_geoset, only: %i[ show edit update destroy ]
+  before_action :set_geoset, only: %i[show edit update destroy]
+  after_action :err_message, only: %i[create update]
 
   # GET /geosets or /geosets.json
   def index
@@ -57,13 +58,20 @@ class GeosetsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_geoset
-      @geoset = Geoset.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def geoset_params
-      params.require(:geoset).permit(:name, :geojson, :geojson_file)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_geoset
+    @geoset = Geoset.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def geoset_params
+    params.require(:geoset).permit(:name, :geojson, :geojson_file)
+  end
+
+  def err_message
+    return unless @geoset.err_message.present?
+
+    flash[:notice] = @geoset.err_message
+  end
 end
