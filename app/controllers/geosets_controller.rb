@@ -69,9 +69,11 @@ class GeosetsController < ApplicationController
     params.require(:geoset).permit(:name, :geojson, :geojson_file)
   end
 
+  # Changing the notice message if any errors occured while parsing file
   def err_message
     return unless @geoset.err_message.present?
 
-    flash[:notice] = @geoset.err_message
+    flash[:notice] = nil
+    flash[:alert] = @geoset.err_message
   end
 end

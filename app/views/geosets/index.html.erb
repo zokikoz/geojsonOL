@@ -1,4 +1,6 @@
-<p id="notice"><%= notice %></p>
+<% flash.each do |name, msg| %>
+  <%= content_tag :p, msg, id: name %>
+<% end %>
 
 <h1>Geosets</h1>
 

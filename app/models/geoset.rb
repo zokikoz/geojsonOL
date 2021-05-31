@@ -2,7 +2,7 @@ class Geoset < ApplicationRecord
   attr_accessor :err_message
 
   # Should be before has_one_attached to find file, because _after callbacks run in reverse order
-  after_commit :json_upload, on: [:create, :update], if: -> { geojson_file.attached? }, unless: -> { @no_callback }
+  after_commit :json_upload, on: %i[create update], if: -> { geojson_file.attached? }, unless: -> { @no_callback }
   before_save :json_parse, unless: -> { geojson_file.attached? }
 
   with_options unless: -> { geojson_file.attached? } do |geoset|
@@ -31,6 +31,5 @@ class Geoset < ApplicationRecord
     logger.error "GeoJSON parse error: #{e.message}"
     destroy
     self.err_message = 'Unable to upload file'
-    #raise ActiveRecord::RecordInvalid
   end
 end
