@@ -18,6 +18,8 @@ class GeosetsController < ApplicationController
 
   # GET /geosets/1/edit
   def edit
+    # Setting hash object to string for form
+    @geoset.geojson = @geoset.raw_geojson
   end
 
   # POST /geosets or /geosets.json
