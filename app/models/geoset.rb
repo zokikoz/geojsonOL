@@ -2,7 +2,8 @@ class Geoset < ApplicationRecord
   attr_accessor :err_message
 
   # Should be before has_one_attached to find file, because _after callbacks run in reverse order
-  after_commit :json_upload, on: %i[create update], if: -> { geojson_file.attached? }, unless: -> { @no_callback }
+  after_commit :file_upload, on: %i[create update], if: -> { geojson_file.attached? }
+  after_commit :file_delete, if: -> { geojson_file.attached? }, unless: -> { @no_callback }
   before_save :json_parse, unless: -> { geojson_file.attached? }
   before_save :set_status
 
@@ -28,14 +29,10 @@ class Geoset < ApplicationRecord
     @is_new = new_record?
   end
 
-  def json_upload
-    # Disabling callbacks because purge method updates the model
-    @no_callback = true
+  def file_upload
     json = JSON.parse(geojson_file.download)
     # Using direct UPDATE SQL via update_column method to avoid infinite loop on callback
     update_column(:geojson, json)
-    # Removing uploaded file
-    geojson_file.purge
   rescue StandardError => e
     logger.error "GeoJSON parse error: #{e.message}"
     self.err_message = 'Unable to upload file'
@@ -43,8 +40,14 @@ class Geoset < ApplicationRecord
     if @is_new
       destroy
     else
-      geojson_file.purge
       update_column(:geojson, JSON.parse(geojson))
     end
+  end
+
+  def file_delete
+    # Disabling callbacks because purge method updates the model
+    @no_callback = true
+    # Removing uploaded file
+    geojson_file.purge
   end
 end
