@@ -36,14 +36,5 @@ RSpec.describe Geoset, type: :model do
         expect(subject.errors[:geojson_file]).to include('invalid content')
       end
     end
-
-    context "with invalid file content" do
-      before do
-        subject.geojson_file.attach(io: StringIO.new('Test'), filename: 'test.geojson', content_type: 'application/geo+json')
-      end
-      it "does not process invalid file" do
-        expect(subject.err_message).to include('Unable to upload file')
-      end
-    end
   end
 end

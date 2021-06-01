@@ -37,8 +37,7 @@ class Geoset < ApplicationRecord
     logger.error "GeoJSON parse error: #{e.message}"
     self.err_message = 'Unable to upload file'
     # Cleaning up after upload error
-    @is_new ? destroy : update_column(:geojson, JSON.parse(geojson)) if geojson.is_a?(String)
-    # Last if is a hack for model file upload test, should be removed after correction
+    @is_new ? destroy : update_column(:geojson, JSON.parse(geojson))
   end
 
   def file_delete

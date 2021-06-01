@@ -15,7 +15,7 @@ require 'rails_helper'
 RSpec.describe "/geosets", type: :request do
   # Geoset. As you add validations to Geoset, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) { { geojson: '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[103.0078125,50.84757295365389],[111.26953125,50.84757295365389],[111.26953125,56.072035471800866],[103.0078125,56.072035471800866],[103.0078125,50.84757295365389]]]}}]}' } }
+  let(:valid_attributes) { { geojson: '{"type":"FeatureCollection","features":[]}' } }
 
   let(:invalid_attributes) { { geojson: nil } }
 
@@ -76,11 +76,52 @@ RSpec.describe "/geosets", type: :request do
         expect(response.status).to eq(422)
       end
     end
+
+    context "with valid file" do
+      it "create a new Geoset" do
+        expect {
+          post geosets_url, params: { geoset:
+            { geojson_file: fixture_file_upload("#{Rails.root}/spec/fixtures/map.geojson", "application/geo+json") }
+          }
+        }.to change(Geoset, :count).by(1)
+      end
+      it 'is setting notice' do
+        post geosets_url, params: {
+          geoset: {
+            geojson_file: fixture_file_upload("#{Rails.root}/spec/fixtures/map.geojson", "application/geo+json")
+          }
+        }
+        expect(flash[:notice]).to match(/Geoset was successfully created/)
+      end
+    end
+
+    context "with invalid file" do
+      it "does not create a new Geoset" do
+        expect {
+          post geosets_url, params: { 
+            geoset: {
+              geojson_file: fixture_file_upload("#{Rails.root}/spec/fixtures/map.png", "image/png")
+            }
+          }
+        }.to change(Geoset, :count).by(0)
+      end
+    end
+
+    context "with invalid file content" do
+      it 'is setting alert' do
+        post geosets_url, params: {
+          geoset: {
+            geojson_file: fixture_file_upload("#{Rails.root}/spec/fixtures/wrong.geojson", "application/geo+json")
+          }
+        }
+        expect(flash[:alert]).to match(/Unable to upload file/)
+      end
+    end
   end
 
   describe "PATCH /update" do
     context "with valid parameters" do
-      let(:new_attributes) { { geojson: '{"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[102.10693359375,56.559482483762245],[101.865234375,51.20688339486559],[110.32470703125,51.20688339486559],[110.36865234374999,56.559482483762245],[102.10693359375,56.559482483762245]]]}}]}' } }
+      let(:new_attributes) { { geojson: '{"type":"FeatureCollection","features":[{"type":"Feature"}]}' } }
 
       it "updates the requested geoset" do
         geoset = Geoset.create! valid_attributes
