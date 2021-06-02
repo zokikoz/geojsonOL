@@ -29,8 +29,8 @@ class Geoset < ApplicationRecord
     @is_new = new_record?
   end
 
-  def file_upload
-    json = JSON.parse(geojson_file.download)
+  def file_upload(*json)
+    geojson_file.download { |f| json = JSON.parse(f) }
     # Using direct UPDATE SQL via update_column method to avoid infinite loop on callback
     update_column(:geojson, json)
   rescue StandardError => e
